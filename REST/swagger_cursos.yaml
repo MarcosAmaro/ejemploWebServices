@@ -1,0 +1,189 @@
+openapi: "3.0.0"
+info:
+  title: Cursos de Programación EdUNLa
+  description: Rest API de EdUNLa para el manejo de cursos de programación
+  version: "1.0"
+  
+servers:
+  - url: http://markos85.pythonanywhere.com
+    description: "URL de la Rest API"
+  
+paths:
+  /cursos:
+    get:
+      tags:
+          - Curso
+      summary: Devuelve todos los cursos disponibles
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+               $ref: "#/components/schemas/ArrayOfCurso"
+               
+    post:
+      tags:
+        - Curso
+      summary: Crea un nuevo curso
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Curso"
+              
+      responses:
+        "301":
+          $ref: "#/components/responses/MissingData"
+        "200":
+          $ref: "#/components/responses/Successful"
+               
+  /cursos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Identificador del curso a consultar
+        schema:
+          type: integer
+          example: 1
+          
+    get:
+      tags:
+        - Curso
+      summary: Devuelve el curso especificado
+      responses:
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "200":
+          $ref: "#/components/responses/Successful"
+               
+    put:
+      tags:
+        - Curso
+      summary: Modifica un curso existente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Curso"
+          
+      responses:
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "400":
+          $ref: "#/components/responses/MissingData"
+        "415":
+          $ref: "#/components/responses/Invalid"
+        "200":
+          $ref: "#/components/responses/Successful"
+               
+    delete:
+      tags:
+        - Curso
+      summary: Elimina un curso existente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del curso a eliminar
+          schema:
+            type: integer
+            example: 100
+          
+      responses:
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "200":
+          $ref: "#/components/responses/Successful"
+      
+components:
+  schemas:
+    Curso:
+      type: object
+      required:
+        - nombre
+        - precio
+        - duracion
+      properties:
+        id:
+          type: integer
+          description: Identificador numérico del curso
+        lenguaje:
+          type: string
+          description: Nombre del curso
+        precio:
+          type: number
+          description: Precio total del curso
+        duracion:
+          type: integer
+          description: La duración del curso en meses
+      example:
+        id: 1000
+        lenguaje: Java
+        precio: 449.95
+        duracion: 4
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: integer
+          description: Código de error
+        descripcion:
+          type: string
+          description: Descripción del error
+          
+    ArrayOfCurso:
+      type: array
+      items:
+        $ref: "#/components/schemas/Curso"
+      example:
+        - id: 1
+          lenguaje: Java
+          precio: 10.45
+          duracion: 5
+        - id: 2
+          lenguaje: Python
+          precio: 1000.01
+          duracion: 4
+  responses:
+    NotFound:
+      description: "Curso no encontrado"
+      content:
+        application/json:
+          schema:
+           $ref: "#/components/schemas/Error"
+          example:
+            error: 404
+            descripcion: "Curso no encontrado" 
+    
+    Invalid:
+      description: Formato desconocido
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: 415
+            descripcion: Formato desconocido
+  
+    MissingData:
+      description: Faltan datos del curso
+      content:
+        application/json:
+          schema:
+           $ref: "#/components/schemas/Error"
+          example:
+            error: 400
+            descripcion: Faltan datos del curso
+           
+    Successful:
+      description: OK
+      content:
+        application/json:
+          schema:
+           $ref: "#/components/schemas/Curso"
+          
