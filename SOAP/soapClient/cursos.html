@@ -1,0 +1,124 @@
+<!DOCTYPE>
+<html>
+<head>
+	<title>Listado de cursos</title>
+	<meta charset="utf-8"/>
+	<link rel="stylesheet" type="text/css" href="DataTables/datatables.min.css"/>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="css/form.css"/>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+	<script type="text/javascript" src="DataTables/datatables.min.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var nuevo = true;
+			var tbl = $('#tblCursos').DataTable( {
+				"ajax": "/soap/listado.php",
+				"columns": [
+					{ "data": "id" },
+					{ "data": "lenguaje" },
+					{ "data": "duracion" },
+					{ "data": "precio" },
+					{ "data": null},
+				],
+				"columnDefs": [
+					{ className: "dt-body-center", targets: [ 1,2,3 ] },
+					{ className: "hide", targets: [ 0 ], searchable: false },
+					{ targets: -1,
+					  defaultContent: "<button class='mod'><i class='fa fa-pencil'></i></button> <button class='del'><i class='fa fa-trash'></i></button>"
+					}
+				  ]
+			} );
+			
+			$('#tblCursos tbody').on( 'click', '.mod', function () {
+				var data = tbl.row( $(this).parents('tr') ).data();
+				
+				nuevo = false;
+				$("#idCur").val(data.id);
+				$("#leng").val(data.lenguaje);
+				$("#pre").val(data.precio);
+				$("#dur").val(data.duracion);
+			} );
+			
+			$('#tblCursos tbody').on( 'click', '.del', function () {
+				$(".clear").click();
+				var d = tbl.row( $(this).parents('tr') ).data();
+				$.ajax({
+				method: "POST",
+				url: "/soap/baja.php",
+				data: {"id": d.id},
+				}).done(function (result) {
+					tbl.ajax.reload();
+				});
+			} );
+			
+			$(".clear").click(
+				function(){
+					$("#formCurso")[0].reset();
+					nuevo = true;
+				}
+			);
+			
+			$("#action").click(
+				function(){
+					var url= nuevo ? "/soap/alta.php" : "/soap/mod.php";
+					
+					$.ajax({
+					method: "POST",
+					url: url,
+					data: $("#formCurso").serialize(),
+					}).done(function (result) {
+						tbl.ajax.reload();
+					});
+				}
+			);	
+	} );
+	</script>
+</head>
+
+	<body>
+		<table id="tblCursos" class="display" style="width:50%">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Lenguaje</th>
+					<th>Duración</th>
+					<th>Precio</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th></th>
+					<th>Lenguaje</th>
+					<th>Duración</th>
+					<th>Precio</th>
+					<th></th>
+				</tr>
+			</tfoot>
+		</table>
+		
+		<div class="container">  
+		  <form id="formCurso" action="" method="post">
+			<h3>Curso</h3>
+			<fieldset style="display:none;">
+			  <input placeholder="id" type="number" name="id" id="idCur">
+			</fieldset>
+			<fieldset>
+			  <input placeholder="Lenguaje" type="text" tabindex="1" required autofocus name="lenguaje" id="leng">
+			</fieldset>
+			<fieldset>
+			  <input placeholder="Precio" type="number" step=0.01 tabindex="2" required name="precio" id="pre">
+			</fieldset>
+			<fieldset>
+			  <input placeholder="Duración" type="number" tabindex="3" required name="duracion" id="dur">
+			</fieldset>
+			<fieldset>
+			  <button name="nuevo" type="button" class="clear">Nuevo</button>
+			  <button name="submit" type="button" class="submit" id="action">Ok</button>
+			</fieldset>
+		  </form>
+		</div>
+	</body>
+
+</html>
