@@ -5,7 +5,7 @@ info:
   version: "1.0"
   
 servers:
-  - url: http://markos85.pythonanywhere.com
+  - url: https://markos85.pythonanywhere.com
     description: "URL de la Rest API"
   
 paths:

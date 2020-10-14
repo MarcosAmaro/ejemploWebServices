@@ -13,27 +13,29 @@ import javax.ws.rs.core.MediaType;
 
 import pojo.Curso;
 
+// Defino a nivel global el path de la api
 @Path("/cursos")
 public interface CursoClient {
 
 	@GET
-	@Path("/listado")
+	@Path("") //Vacio porque consulta el path de la api sin mas agregado => /cursos
 	public List<Curso> traerCursos();
 	
 	@GET
-	@Path("/detalle/{id}")
+	@Path("{id}") // => /cursos/{id}
 	public Curso traerCurso(@PathParam("id") Integer id);
 	
 	@POST
-	@Path("/nuevo")
+	@Path("") // => /cursos
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Curso crearCurso(Curso c);
 	
 	@PUT
+	@Path("{id}") // => /cursos/{id}
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Curso modificarCurso(Curso c);
+	public Curso modificarCurso(@PathParam("id") Integer id, Curso c);
 	
 	@DELETE
-	@Path("/{id}")
+	@Path("{id}") // => /cursos/{id}
 	public Curso borrarCurso(@PathParam("id") Integer id);
 }

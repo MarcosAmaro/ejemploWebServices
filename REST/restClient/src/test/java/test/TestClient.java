@@ -14,7 +14,7 @@ public class TestClient {
 
 	public static void main(String[] args) {
 		ResteasyClient client = new ResteasyClientBuilderImpl().build();
-		ResteasyWebTarget wt = client.target("http://192.168.43.129:5000");
+		ResteasyWebTarget wt = client.target("https://markos85.pythonanywhere.com");
 		CursoClient cc = wt.proxy(CursoClient.class);
 		
 		List<Curso> cursos = cc.traerCursos();
@@ -28,9 +28,15 @@ public class TestClient {
 		System.out.println();
 		System.out.println(cc.traerCurso(2));
 		System.out.println("*****************");
-		System.out.println(cc.traerCurso(6));
-		System.out.println("*****************");
-		System.out.println();
+		try {
+			System.out.println(cc.traerCurso(600));
+			System.out.println("*****************");
+			System.out.println();
+			
+		}catch(Exception e) { //Tira un 404 
+			System.out.println(e.getMessage());
+		}
+		
 		
 		Curso c = new Curso();
 		c.setLenguaje("C# Sharp");
@@ -43,11 +49,11 @@ public class TestClient {
 		
 		c.setId(1);
 		c.setLenguaje("SmallTalk");
-		System.out.println(cc.modificarCurso(c));
+		System.out.println(cc.modificarCurso(c.getId(), c));
 		System.out.println("*****************");
 		System.out.println();
 		
-		System.out.println(cc.borrarCurso(3));
+		System.out.println(cc.borrarCurso(c.getId()));
 		System.out.println("*****************");
 		System.out.println();
 		
